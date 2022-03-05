@@ -1,24 +1,60 @@
-import logo from './logo.svg';
-import './App.css';
+
+import React, { useState, useEffect } from 'react'
+import Photo from './Photo';
+import { FaSearch } from 'react-icons/fa'
+
+// unsplash
+const clientID = `?client_id=WWSKTIxshgo6LcWkF4k4OdhHtND2Hb1DXWio77BWf5I`
+const mainUrl = `https://api.unsplash.com/photos/`
 
 function App() {
+
+  const [loading, setLoading] = useState(false)
+  const [photos, setPhotos] = useState([])
+  
+  const fetchImages = async () => {
+    setLoading(true)
+    let url = `${mainUrl}${clientID}`
+    const res = await fetch(url)
+    const data = await res.json()
+    console.log(data);
+    setLoading(false)
+    setPhotos(data)
+  }
+  
+  useEffect(() => {
+    fetchImages()
+  }, [])
+  
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+   <main className="section">
+
+      <section className="search">
+        <form className="search-form">
+          <input className="form-input" type="text"
+                 placeholder='Search'>
+          </input>
+          <button className='submit-btn' type='submit'>
+              <FaSearch/>
+          </button>
+        </form>
+      </section>
+
+      {loading ? <h1 className='loading'>Loading ...</h1>
+               : 
+                 <section className="photos">
+                  <div className="photos-center">
+                      {photos.map(photo =>
+                         <Photo key={photo.id} {...photo}/>
+                      )}
+                  </div>   
+                 </section>
+      }
+
+
+    
+    </main> 
   );
 }
 
