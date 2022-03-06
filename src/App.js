@@ -7,25 +7,42 @@ import { FaSearch } from 'react-icons/fa'
 const clientID = `?client_id=WWSKTIxshgo6LcWkF4k4OdhHtND2Hb1DXWio77BWf5I`
 const mainUrl = `https://api.unsplash.com/photos/`
 
+
+
 function App() {
 
   const [loading, setLoading] = useState(false)
   const [photos, setPhotos] = useState([])
+  const [page, setPage] = useState(1)
   
   const fetchImages = async () => {
     setLoading(true)
-    let url = `${mainUrl}${clientID}`
+
+    const urlPage = `&page=${page}`
+    let url = `${mainUrl}${clientID}${urlPage}`
+
     const res = await fetch(url)
     const data = await res.json()
     console.log(data);
+    setPhotos(oldPhotos => [...oldPhotos, ...data])
     setLoading(false)
-    setPhotos(data)
   }
   
   useEffect(() => {
     fetchImages()
-  }, [])
+  }, [page])
   
+  useEffect(() => {
+    const event = window.addEventListener("scroll", () => {
+      if(!loading && (window.innerHeight + window.scrollY) >= document.body.scrollHeight - 2){
+        setPage( oldPage => oldPage + 1 )
+      }
+    })
+    return () => {
+      window.removeEventListener("scroll", event)
+    }
+  }, [])
+
 
   return (
    <main className="section">
